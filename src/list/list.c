@@ -33,7 +33,7 @@ uint8_t llist_clean(struct llist_t* list) {
         return 0;
 
     struct llist_node_t* node = list->head;
-    struct llist_node_t* temp;
+    struct llist_node_t* temp = NULL;
 
     while (node != NULL)
     {
@@ -57,7 +57,7 @@ uint8_t llist_destroy(struct llist_t* list) {
         return 0;
 
     struct llist_node_t* node = list->head;
-    struct llist_node_t* temp;
+    struct llist_node_t* temp = NULL;
 
     while (node != NULL)
     {
@@ -76,8 +76,7 @@ uint8_t llist_push_back(struct llist_t* list, void* data) {
     if(list == NULL || data == NULL)
         return 0;
 
-    struct llist_node_t* node = NULL;
-    node = malloc(sizeof(struct llist_node_t));
+    struct llist_node_t* node = malloc(sizeof(struct llist_node_t));
     
     node->data = data;
     node->next = NULL;
@@ -99,8 +98,7 @@ uint8_t llist_push_front(struct llist_t* list, void* data) {
     if(list == NULL || data == NULL)
         return 0;
 
-    struct llist_node_t* node = NULL;
-    node = malloc(sizeof(struct llist_node_t));
+    struct llist_node_t* node = malloc(sizeof(struct llist_node_t));
     
     node->data = data;
     
@@ -264,7 +262,7 @@ void* llist_remove_index(struct llist_t* list, int index) {
 
     struct llist_node_t* prev_node = list->head;
     struct llist_node_t* node = NULL;
-    void *data;
+    void *data = NULL;
 
     int count = 0;
 
