@@ -308,9 +308,7 @@ static struct llist_node_t* _llist_invert(struct llist_t* list, struct llist_nod
         return node;
 
     if(_llist_invert(list, node->next, node) == NULL)
-    {
         list->head = node;
-    }
 
     node->next = last;
     return node;
