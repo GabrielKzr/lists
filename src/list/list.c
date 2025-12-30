@@ -259,7 +259,7 @@ void* llist_remove_index(struct llist_t* list, int index) {
     if(index == 0)
         return llist_pop_front(list);
 
-    if(index == list->size) 
+    if(index == list->size-1) 
         return llist_pop_back(list);
 
     struct llist_node_t* prev_node = list->head;
@@ -630,11 +630,103 @@ uint8_t dlist_insert_index(struct dlist_t* list, void* data, int index) {
     return 1;
 }
 
-void* dlist_pop_back(struct dlist_t* list);
-void* dlist_pop_front(struct dlist_t* list);
-void* dlist_remove(struct dlist_t* list, struct dlist_node_t* prev_node);
-void* dlist_remove_index(struct dlist_t* list, int index);
-void* dlist_find(struct dlist_t* list, uint8_t (*cmp)(void *, void *), void *data);
+void* dlist_pop_back(struct dlist_t* list) {
+
+    if(list == NULL)
+        return list;
+
+    void* data = list->tail->data;
+    list->tail = list->tail->prev;
+    free(list->tail->next);
+    list->tail->next = NULL;
+    list->size--;
+
+    return data;
+}
+
+void* dlist_pop_front(struct dlist_t* list) {
+    if(list == NULL)
+        return list;
+
+    void* data = list->head->data;
+    list->head = list->head->next;
+    free(list->head->prev);
+    list->head->prev = NULL;
+    list->size--;
+
+    return data;
+}
+
+void* dlist_remove(struct dlist_t* list, struct dlist_node_t* prev_node) {
+
+    if(list == NULL || prev_node == NULL)   
+        return NULL;
+
+    void* data = prev_node->next->data;
+    prev_node = prev_node->next;
+    prev_node->next->prev = prev_node->prev;
+    prev_node->prev->next = prev_node->next;
+    list->size--;
+
+    free(prev_node);
+
+    return data;
+}
+
+void* dlist_remove_index(struct dlist_t* list, int index) {
+    if(list == NULL)
+        return list;
+
+    if(index >= list->size)
+        return NULL;
+
+    if(index == 0)
+        return dlist_pop_front(list);
+
+    if(index == list->size-1)
+        return dlist_pop_back(list);
+
+    int count = 1;
+    struct dlist_node_t* node = list->head->next;
+    void* data = NULL;
+
+    while (node != NULL)
+    {
+        if(count == index)
+            break;
+
+        count++;
+        node = node->next;
+    }
+
+    if(node == NULL)
+        return node;
+
+    data = node->data;
+    node->next->prev = node->prev;
+    node->prev->next = node->next;
+    list->size--;
+    free(node);
+    return data;
+}
+
+void* dlist_find(struct dlist_t* list, uint8_t (*cmp)(void *, void *), void *data) {
+    if(list == NULL || cmp == NULL || data == NULL)
+        return NULL;
+
+    struct dlist_node_t* node = list->head;
+
+    while (node != NULL)
+    {
+        if(cmp(node->data, data))
+            return node->data;   
+
+        node = node->next;
+    }
+
+    return NULL;
+}
+
 uint8_t dlist_invert(struct dlist_t* list);
 
 uint8_t dlist_is_empty(struct dlist_t* list) {
