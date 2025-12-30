@@ -598,7 +598,7 @@ uint8_t dlist_insert(struct dlist_t* list, struct dlist_node_t* prev_node, void*
     if(list == NULL || prev_node == NULL || data == NULL)
         return 0;
 
-    if(prev_node->next = list->tail)
+    if(prev_node->next == list->tail)
         return dlist_push_back(list, data);
 
     struct dlist_node_t* node = malloc(sizeof(struct dlist_node_t));
@@ -869,7 +869,72 @@ uint8_t dlist_move(struct dlist_t *list_dst, struct dlist_t *list_src, struct dl
     return 1;
 }
 
-struct dlist_node_t* dlist_index(struct dlist_t *list, int index);
-uint8_t dlist_rotate(struct dlist_t* list);
-uint8_t dlist_rotate_back(struct dlist_t* list);
-void dlist_print(struct dlist_t* list);
+struct dlist_node_t* dlist_index(struct dlist_t *list, int index) {
+    if(list == NULL)
+        return (void *)list;
+
+    if(index >= list->size)
+        return NULL;
+
+    int count = 0;
+    struct dlist_node_t* node = list->head;
+
+    while (node != NULL)
+    {
+        if(count == index)
+            return node;
+
+        count++;
+        node = node->next;
+    }
+    
+    return NULL;
+}
+
+uint8_t dlist_rotate(struct dlist_t* list) {
+
+    if(list == NULL)
+        return 0;
+
+    list->tail->next = list->head;      //  ... <-> tail -> head <-> ...
+    list->head->prev = list->tail;      //  ... <-> tail <-> head <-> ...
+    list->head = list->tail;            //  ... <-> tail/head <-> head_next <-> ...
+    if(list->tail->prev != NULL)    
+        list->tail = list->tail->prev;  //  ... <-> tail <-> head <-> ...
+    list->tail->next = NULL;            //  ... <-> tail -> NULL
+                                        //            |<-head
+    list->head->prev = NULL;            //  ... <-> tail -> NULL
+
+    return 1;
+}   
+
+uint8_t dlist_rotate_back(struct dlist_t* list) {
+
+    if(list == NULL)
+        return 0;
+
+    list->tail->next = list->head;
+    list->head->prev = list->tail;
+    list->tail = list->head;
+    if(list->head->next != NULL)
+        list->head = list->head->next;
+    list->tail->next = NULL;
+    list->head->prev = NULL;
+    
+    return 1;
+}
+
+void dlist_print(struct dlist_t* list) {
+    if(list == NULL)
+        return;
+
+    int count = 0;
+    struct dlist_node_t* node = list->head;
+
+    printf("NULL ");
+    while (node != NULL)
+    {
+        printf("<-> node_%d ", count);
+    }
+    printf("<-> NULL\n");
+}
