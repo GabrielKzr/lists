@@ -462,3 +462,193 @@ void llist_print(struct llist_t* list) {
 
     return;
 }
+
+/*
+struct dlist_node_t {
+    void *data;
+    struct dlist_node_t* next;
+    struct dlist_node_t* prev;
+};
+
+struct dlist_t {
+    int size;
+    struct dlist_node_t* head;
+    struct dlist_node_t* tail;
+};
+*/
+
+uint8_t dlist_init(struct dlist_t* list) {
+
+    if(list == NULL)
+        return 0;
+
+    list->size = 0;
+    list->head = NULL;
+    list->tail = NULL;
+
+    return 1;
+}
+
+uint8_t dlist_clean(struct dlist_t* list) {
+
+    if(list == NULL)
+        return 0;
+
+    struct dlist_node_t* node = list->head;
+    struct dlist_node_t* temp = NULL;
+
+    while (node != NULL)
+    {
+        if(node->data != NULL)
+            free(node->data);
+
+        temp = node;
+        node = node->next;
+
+        free(temp);
+    }
+    
+    return 1;
+}
+
+uint8_t dlist_destroy(struct dlist_t* list) {
+
+    if(list == NULL)
+        return 0;
+
+    struct dlist_node_t* node = list->head;
+    struct dlist_node_t* temp = NULL;
+
+    while (node != NULL)
+    {
+        temp = node;
+        node = node->next;
+
+        free(temp);
+    }
+    
+    return 1;
+}
+
+uint8_t dlist_push_back(struct dlist_t* list, void* data) {
+
+    if(list == NULL || data == NULL)
+        return 0;
+
+    struct dlist_node_t* node = malloc(sizeof(struct dlist_node_t));
+    node->data = data;
+
+    if(dlist_is_empty(list)) {
+        node->prev = NULL;
+        list->head = node;
+    } else {
+        node->prev = list->tail;
+        list->tail->next = node;
+    }
+    
+    node->next = NULL;
+    list->tail = node;
+
+    list->size++;
+    return 1;
+}
+
+uint8_t dlist_push_front(struct dlist_t* list, void* data) {
+    if(list == NULL || data == NULL)
+        return 0;
+
+    struct dlist_node_t* node = malloc(sizeof(struct dlist_node_t));
+    node->data = data;
+
+    if(dlist_is_empty(list)) {
+        node->next = NULL;
+        list->tail = node;
+    } else {
+        node->next = list->head;
+        list->head->prev = node;
+    }
+    
+    node->prev = NULL;
+    list->head = node;
+    list->size++;
+
+    return 1;
+}
+
+uint8_t dlist_insert(struct dlist_t* list, struct dlist_node_t* prev_node, void* data) {
+    if(list == NULL || prev_node == NULL || data == NULL)
+        return 0;
+
+    if(prev_node->next = list->tail)
+        return dlist_push_back(list, data);
+
+    struct dlist_node_t* node = malloc(sizeof(struct dlist_node_t));
+    node->data = data;
+
+    prev_node->next->prev = node;
+    node->next = prev_node->next;
+    node->prev = prev_node;
+    prev_node->next = node;
+
+    list->size++;
+
+    return 1;
+}
+
+uint8_t dlist_insert_index(struct dlist_t* list, void* data, int index) {
+    if(list == NULL || data == NULL)
+        return 0;
+
+    if(index > list->size)
+        return 0;
+
+    if(index == 0)
+        return dlist_push_front(list, data);
+
+    if(index == list->size)
+        return dlist_push_back(list, data);
+
+    struct dlist_node_t* node = malloc(sizeof(struct dlist_node_t));
+    struct dlist_node_t* prev = list->head;
+    int count = 0;
+
+    while (1)
+    {
+        if(count+1 == index)
+            break;
+
+        count++;
+        prev = prev->next;
+    }
+    
+    prev->next->prev = node;
+    node->next = prev->next;
+    node->prev = prev;
+    prev->next = node;
+
+    list->size++;
+    return 1;
+}
+
+void* dlist_pop_back(struct dlist_t* list);
+void* dlist_pop_front(struct dlist_t* list);
+void* dlist_remove(struct dlist_t* list, struct dlist_node_t* prev_node);
+void* dlist_remove_index(struct dlist_t* list, int index);
+void* dlist_find(struct dlist_t* list, uint8_t (*cmp)(void *, void *), void *data);
+uint8_t dlist_invert(struct dlist_t* list);
+
+uint8_t dlist_is_empty(struct dlist_t* list) {
+    if(list == NULL)
+        return 0;
+
+    return list->size == 0;
+}
+
+struct dlist_node_t* dlist_next(struct dlist_node_t* node);
+struct dlist_node_t* dlist_cnext(struct dlist_t* list, struct dlist_node_t* node);
+uint8_t dlist_foreach(struct dlist_t* list, void (*op)(struct dlist_node_t*, void *), void *data);
+uint8_t dlist_move(struct dlist_t *list_dst, struct dlist_t *list_src, struct dlist_node_t *node);
+struct dlist_node_t* dlist_index(struct dlist_t *list, int index);
+uint8_t dlist_rotate(struct dlist_t* list);
+uint8_t dlist_rotate_back(struct dlist_t* list);
+void dlist_print(struct dlist_t* list);

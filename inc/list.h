@@ -41,4 +41,40 @@ uint8_t llist_rotate(struct llist_t* list);
 uint8_t llist_rotate_back(struct llist_t* list);
 void llist_print(struct llist_t* list);
 
+struct dlist_node_t {
+    void *data;
+    struct dlist_node_t* next;
+    struct dlist_node_t* prev;
+};
+
+struct dlist_t {
+    int size;
+    struct dlist_node_t* head;
+    struct dlist_node_t* tail;
+};
+
+uint8_t dlist_init(struct dlist_t* list);
+uint8_t dlist_clean(struct dlist_t* list);
+uint8_t dlist_destroy(struct dlist_t* list);
+uint8_t dlist_push_back(struct dlist_t* list, void* data);
+uint8_t dlist_push_front(struct dlist_t* list, void* data);
+uint8_t dlist_insert(struct dlist_t* list, struct dlist_node_t* prev_node, void* data);
+uint8_t dlist_insert_index(struct dlist_t* list, void* data, int index);
+void* dlist_pop_back(struct dlist_t* list);
+void* dlist_pop_front(struct dlist_t* list);
+void* dlist_remove(struct dlist_t* list, struct dlist_node_t* prev_node);
+void* dlist_remove_index(struct dlist_t* list, int index);
+void* dlist_find(struct dlist_t* list, uint8_t (*cmp)(void *, void *), void *data);
+uint8_t dlist_invert(struct dlist_t* list);
+uint8_t dlist_is_empty(struct dlist_t* list);
+struct dlist_node_t* dlist_next(struct dlist_node_t* node);
+struct dlist_node_t* dlist_cnext(struct dlist_t* list, struct dlist_node_t* node);
+uint8_t dlist_foreach(struct dlist_t* list, void (*op)(struct dlist_node_t*, void *), void *data);
+uint8_t dlist_move(struct dlist_t *list_dst, struct dlist_t *list_src, struct dlist_node_t *node);
+struct dlist_node_t* dlist_index(struct dlist_t *list, int index);
+uint8_t dlist_rotate(struct dlist_t* list);
+uint8_t dlist_rotate_back(struct dlist_t* list);
+void dlist_print(struct dlist_t* list);
+
+
 #endif

@@ -16,11 +16,8 @@ uint8_t cmp(void *a, void *b) {
     return *ptra == *ptrb;
 }
 
-int main() 
-{
-    // printf("Hello, World!\n");
-
-    struct llist_t *list = malloc(sizeof(struct llist_t));
+void linked_list_test() {
+        struct llist_t *list = malloc(sizeof(struct llist_t));
     struct llist_t *list2 = malloc(sizeof(struct llist_t));
 
     llist_init(list);
@@ -115,6 +112,12 @@ int main()
     llist_destroy(list2);
 
     printf("ok\n");
+}
+
+int main() 
+{
+    // printf("Hello, World!\n");
+    linked_list_test();
 
     return 0;
 }
