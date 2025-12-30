@@ -375,20 +375,39 @@ uint8_t llist_move(struct llist_t *list_dst, struct llist_t *list_src, struct ll
     if(list_dst == NULL || list_src == NULL || node == NULL)    
         return 0;
 
-    struct llist_node_t* temp = list_src->head;
+    struct llist_node_t* cur = list_src->head;
+    struct llist_node_t* prev = NULL;
 
-    while(temp->next != node || temp->next == NULL)
-        temp = temp->next;
-
-    if(temp->next == NULL) 
+    while (cur != NULL && cur != node)
+    {
+        prev = cur;
+        cur = cur->next;
+    }
+    
+    if(cur == NULL)
         return 0;
 
-    temp->next = node->next;
+    if(prev == NULL)
+        list_src->head = node->next;
+    else
+        prev->next = node->next;
+
+    if(node == list_src->tail)
+        list_src->tail = prev;
+
     list_src->size--;
 
     node->next = NULL;
-    list_dst->tail->next = node;
-    list_dst->tail = node;
+
+    if(llist_is_empty(list_dst)) {
+        list_dst->head = node;
+        list_dst->tail = node;
+    }
+    else {
+        list_dst->tail->next = node;
+        list_dst->tail = node;
+    }
+
     list_dst->size++;
 
     return 1;
@@ -727,7 +746,27 @@ void* dlist_find(struct dlist_t* list, uint8_t (*cmp)(void *, void *), void *dat
     return NULL;
 }
 
-uint8_t dlist_invert(struct dlist_t* list);
+uint8_t dlist_invert(struct dlist_t* list) {
+    if(list == NULL)
+        return 0;
+
+    struct dlist_node_t* node = list->head;
+    struct dlist_node_t* next = NULL;
+
+    while (node != NULL)
+    {
+        next = node->next;
+        node->next = node->prev;
+        node->prev = next;
+        node = next;
+    }
+    
+    next = list->tail;
+    list->tail = list->head;
+    list->head = next;
+
+    return 1;
+}
 
 uint8_t dlist_is_empty(struct dlist_t* list) {
     if(list == NULL)
@@ -736,10 +775,100 @@ uint8_t dlist_is_empty(struct dlist_t* list) {
     return list->size == 0;
 }
 
-struct dlist_node_t* dlist_next(struct dlist_node_t* node);
-struct dlist_node_t* dlist_cnext(struct dlist_t* list, struct dlist_node_t* node);
-uint8_t dlist_foreach(struct dlist_t* list, void (*op)(struct dlist_node_t*, void *), void *data);
-uint8_t dlist_move(struct dlist_t *list_dst, struct dlist_t *list_src, struct dlist_node_t *node);
+struct dlist_node_t* dlist_next(struct dlist_node_t* node) {
+    if(node == NULL)
+        return node;
+
+    return node->next;
+}
+
+struct dlist_node_t* dlist_cnext(struct dlist_t* list, struct dlist_node_t* node) {
+    if(list == NULL || node == NULL)
+        return NULL;
+
+    if(node == list->tail)
+        return list->head;
+
+    return node->next;
+}
+
+struct dlist_node_t* dlist_prev(struct dlist_node_t* node) {
+    if(node == NULL)
+        return node;
+
+    return node->prev;
+}
+
+struct dlist_node_t* dlist_cprev(struct dlist_t* list, struct dlist_node_t* node) {
+    if(list == NULL || node == NULL)
+        return NULL;
+
+    if(node == list->head)
+        return list->tail;
+    
+    return node->prev;
+}
+
+uint8_t dlist_foreach(struct dlist_t* list, void (*op)(struct dlist_node_t*, void *), void *data) {
+    if(list == NULL || op == NULL)
+        return 0;
+
+    struct dlist_node_t* node = list->head;
+
+    while (node != NULL)
+    {
+        op(node, data);
+        node = node->next;
+    }
+
+    return 1;
+}
+
+uint8_t dlist_move(struct dlist_t *list_dst, struct dlist_t *list_src, struct dlist_node_t *node) {
+
+    if(list_dst == NULL || list_src == NULL || node == NULL) 
+        return 0;
+
+    struct dlist_node_t* _find = list_src->head;
+
+    while (_find != NULL)
+    {
+        if(_find == node)
+            break;
+        
+        _find = _find->next;
+    }
+
+    if(_find == NULL)
+        return 0;
+
+    if (node->prev != NULL)
+        node->prev->next = node->next;
+    else
+        list_src->head = node->next;
+
+    if (node->next != NULL)
+        node->next->prev = node->prev;
+    else
+        list_src->tail = node->prev;
+
+    list_src->size--;
+
+    if(dlist_is_empty(list_dst)) {
+        list_dst->head = node;
+        node->prev = NULL;
+    } else {
+        list_dst->tail->next = node;
+        node->prev = list_dst->tail;
+    }
+    
+    list_dst->tail = node;
+    node->next = NULL;
+    list_dst->size++;
+
+    return 1;
+}
+
 struct dlist_node_t* dlist_index(struct dlist_t *list, int index);
 uint8_t dlist_rotate(struct dlist_t* list);
 uint8_t dlist_rotate_back(struct dlist_t* list);

@@ -69,6 +69,8 @@ uint8_t dlist_invert(struct dlist_t* list);
 uint8_t dlist_is_empty(struct dlist_t* list);
 struct dlist_node_t* dlist_next(struct dlist_node_t* node);
 struct dlist_node_t* dlist_cnext(struct dlist_t* list, struct dlist_node_t* node);
+struct dlist_node_t* dlist_prev(struct dlist_node_t* node);
+struct dlist_node_t* dlist_cprev(struct dlist_t* list, struct dlist_node_t* node);
 uint8_t dlist_foreach(struct dlist_t* list, void (*op)(struct dlist_node_t*, void *), void *data);
 uint8_t dlist_move(struct dlist_t *list_dst, struct dlist_t *list_src, struct dlist_node_t *node);
 struct dlist_node_t* dlist_index(struct dlist_t *list, int index);
