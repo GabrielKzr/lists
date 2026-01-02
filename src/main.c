@@ -17,7 +17,7 @@ uint8_t cmp(void *a, void *b) {
 }
 
 void linked_list_test() {
-        struct llist_t *list = malloc(sizeof(struct llist_t));
+    struct llist_t *list = malloc(sizeof(struct llist_t));
     struct llist_t *list2 = malloc(sizeof(struct llist_t));
 
     llist_init(list);
@@ -114,10 +114,89 @@ void linked_list_test() {
     printf("ok\n");
 }
 
+void double_list_print_data(struct dlist_node_t* node, void *data) {
+
+    int* ptr = (int *)node->data;
+    int val = *ptr;
+
+    printf("val %d <-> ", val);
+}
+
+void double_linked_list_test() {
+
+    struct dlist_t* list = malloc(sizeof(struct dlist_t));
+
+    int num_values = 10;
+    int values[10];
+
+// Tests - Add
+
+    for(int i = 0; i < num_values; i++) {
+        values[i] = i;
+        dlist_push_back(list, &values[i]);
+    }
+
+    for(int i = 0; i < num_values; i++) {
+        values[i] = i;
+        dlist_push_front(list, &values[i]);
+    }
+
+    printf("val AAAAAAAAa %d\n", *(int *)list->tail->prev->data);
+
+    int insert_data = 12345;
+    dlist_insert(list, list->tail->prev, &insert_data);
+    dlist_insert_index(list, &insert_data, (list->size)-1);
+
+// Tests - remove
+
+    int* ptr1 = (int *)dlist_pop_back(list);
+    printf("ptr1 val -> %d\n", *ptr1);
+    
+    int* ptr2 = (int *)dlist_pop_front(list);
+    printf("ptr2 val -> %d\n", *ptr2);
+
+    int* ptr3 = (int *)dlist_remove(list, list->tail->prev);
+    printf("ptr3 val -> %d\n", *ptr3);
+
+    int* ptr4 = (int *)dlist_remove_index(list, list->size-1);
+    printf("ptr3 val -> %d\n", *ptr4);
+
+// Tests - aux
+
+    int cmp_val = 123456;
+    if(dlist_find(list, cmp, &cmp_val) != NULL) {
+        printf("found\n");
+    } else {
+        printf("not found\n");
+    }
+
+    dlist_push_back(list, &cmp_val);
+
+    dlist_invert(list);
+
+    if(dlist_is_empty(list)) {
+        printf("empty\n");
+    } else {
+        printf("not empty\n");
+    }
+
+
+    printf("NULL <-> ");
+    dlist_foreach(list, double_list_print_data, NULL);
+    printf("NULL\n");
+
+    printf("\n ------------------------------- \n\n");
+
+    dlist_print(list);
+    dlist_destroy(list);
+    printf("ok\n");
+}
+
 int main() 
 {
     // printf("Hello, World!\n");
-    linked_list_test();
+    // linked_list_test();
+    double_linked_list_test();
 
     return 0;
 }

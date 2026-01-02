@@ -600,17 +600,13 @@ uint8_t dlist_insert(struct dlist_t* list, struct dlist_node_t* prev_node, void*
     if(list == NULL || prev_node == NULL || data == NULL)
         return 0;
 
-    if(prev_node->next == list->tail)
+    if(prev_node == list->tail)
         return dlist_push_back(list, data);
 
     struct dlist_node_t* node = malloc(sizeof(struct dlist_node_t));
     node->data = data;
 
-    if(prev_node->next != NULL)
-        prev_node->next->prev = node;
-    else 
-        list->tail = node;    
-
+    prev_node->next->prev = node; // never seg fault 'cause never gonna insert back (handled before)
     node->next = prev_node->next;
     node->prev = prev_node;
     prev_node->next = node;
@@ -635,17 +631,17 @@ uint8_t dlist_insert_index(struct dlist_t* list, void* data, int index) {
 
     struct dlist_node_t* node = malloc(sizeof(struct dlist_node_t));
     struct dlist_node_t* prev = list->head;
+    node->data = data;
     int count = 0;
 
     while (1)
     {
         if(count+1 == index)
             break;
-
         count++;
         prev = prev->next;
     }
-    
+
     prev->next->prev = node; // never seg fault 'cause never gonna insert back (handled before)
     node->next = prev->next;
     node->prev = prev;
@@ -962,6 +958,8 @@ void dlist_print(struct dlist_t* list) {
     while (node != NULL)
     {
         printf("<-> node_%d ", count);
+        count++;
+        node = node->next;
     }
     printf("<-> NULL\n");
 }
