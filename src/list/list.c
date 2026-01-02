@@ -138,7 +138,7 @@ uint8_t llist_insert_index(struct llist_t* list, void* data, int index) {
     if(list == NULL || data == NULL)
         return 0;
 
-    if(index > list->size)
+    if(index > list->size || index < 0)
         return 0;
 
     if(index == 0)
@@ -251,7 +251,7 @@ void* llist_remove_index(struct llist_t* list, int index) {
     if(list == NULL)
         return list;
 
-    if(index > list->size)
+    if(index > list->size || index < 0)
         return NULL;
 
     if(index == 0)
@@ -414,7 +414,7 @@ struct llist_node_t* llist_index(struct llist_t *list, int index) {
     if(list == NULL)
         return (void *)list;
 
-    if(index >= list->size)
+    if(index >= list->size || index < 0)
         return NULL;
 
     int count = 0;
@@ -436,6 +436,9 @@ uint8_t llist_rotate(struct llist_t* list) {
     if(list == NULL)
         return 0;
 
+    if(llist_is_empty(list))
+        return 0;
+
     list->tail->next = list->head;
     list->head = list->tail;
 
@@ -450,6 +453,9 @@ uint8_t llist_rotate(struct llist_t* list) {
 
 uint8_t llist_rotate_back(struct llist_t* list) {
     if(list == NULL)
+        return 0;
+
+    if(llist_is_empty(list))
         return 0;
                                     //   ... -> tail -> NULL
     list->tail->next = list->head;  //   ... -> tail -> head -> head_next -> ...
@@ -600,7 +606,11 @@ uint8_t dlist_insert(struct dlist_t* list, struct dlist_node_t* prev_node, void*
     struct dlist_node_t* node = malloc(sizeof(struct dlist_node_t));
     node->data = data;
 
-    prev_node->next->prev = node;
+    if(prev_node->next != NULL)
+        prev_node->next->prev = node;
+    else 
+        list->tail = node;    
+
     node->next = prev_node->next;
     node->prev = prev_node;
     prev_node->next = node;
@@ -613,8 +623,8 @@ uint8_t dlist_insert(struct dlist_t* list, struct dlist_node_t* prev_node, void*
 uint8_t dlist_insert_index(struct dlist_t* list, void* data, int index) {
     if(list == NULL || data == NULL)
         return 0;
-
-    if(index > list->size)
+    
+    if(index > list->size || index < 0)
         return 0;
 
     if(index == 0)
@@ -636,7 +646,7 @@ uint8_t dlist_insert_index(struct dlist_t* list, void* data, int index) {
         prev = prev->next;
     }
     
-    prev->next->prev = node;
+    prev->next->prev = node; // never seg fault 'cause never gonna insert back (handled before)
     node->next = prev->next;
     node->prev = prev;
     prev->next = node;
@@ -674,16 +684,33 @@ void* dlist_pop_front(struct dlist_t* list) {
 
 void* dlist_remove(struct dlist_t* list, struct dlist_node_t* prev_node) {
 
-    if(list == NULL || prev_node == NULL)   
+    if(list == NULL || prev_node == NULL || prev_node->next == NULL)   
         return NULL;
 
-    void* data = prev_node->next->data;
-    prev_node = prev_node->next;
-    prev_node->next->prev = prev_node->prev;
-    prev_node->prev->next = prev_node->next;
-    list->size--;
+    struct dlist_node_t* node = list->head;
 
-    free(prev_node);
+    while (node != NULL)
+    {
+        if(node == prev_node)
+            break;
+        node = node->next;
+    }
+    
+    if(node == NULL) // do not contains prev_node
+        return node;
+
+    void* data = prev_node->next->data;
+    node = prev_node->next;
+
+    if(node == list->tail) 
+        list->tail = prev_node;
+    else
+        node->next->prev = prev_node;
+    
+    prev_node->next = node->next;
+
+    free(node);
+    list->size--;
 
     return data;
 }
@@ -692,7 +719,7 @@ void* dlist_remove_index(struct dlist_t* list, int index) {
     if(list == NULL)
         return list;
 
-    if(index >= list->size)
+    if(index >= list->size || index < 0)
         return NULL;
 
     if(index == 0)
@@ -869,7 +896,7 @@ struct dlist_node_t* dlist_index(struct dlist_t *list, int index) {
     if(list == NULL)
         return (void *)list;
 
-    if(index >= list->size)
+    if(index >= list->size || index < 0)
         return NULL;
 
     int count = 0;
@@ -892,11 +919,13 @@ uint8_t dlist_rotate(struct dlist_t* list) {
     if(list == NULL)
         return 0;
 
+    if(dlist_is_empty(list))
+        return 0;
+
     list->tail->next = list->head;      //  ... <-> tail -> head <-> ...
     list->head->prev = list->tail;      //  ... <-> tail <-> head <-> ...
     list->head = list->tail;            //  ... <-> tail/head <-> head_next <-> ...
-    if(list->tail->prev != NULL)    
-        list->tail = list->tail->prev;  //  ... <-> tail <-> head <-> ...
+    list->tail = list->tail->prev;      //  ... <-> tail <-> head <-> ...
     list->tail->next = NULL;            //  ... <-> tail -> NULL
                                         //            |<-head
     list->head->prev = NULL;            //  ... <-> tail -> NULL
@@ -909,11 +938,13 @@ uint8_t dlist_rotate_back(struct dlist_t* list) {
     if(list == NULL)
         return 0;
 
+    if(dlist_is_empty(list))
+        return 0;
+
     list->tail->next = list->head;
     list->head->prev = list->tail;
     list->tail = list->head;
-    if(list->head->next != NULL)
-        list->head = list->head->next;
+    list->head = list->head->next;
     list->tail->next = NULL;
     list->head->prev = NULL;
     
