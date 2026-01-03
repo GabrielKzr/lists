@@ -125,11 +125,15 @@ void double_list_print_data(struct dlist_node_t* node, void *data) {
 void double_linked_list_test() {
 
     struct dlist_t* list = malloc(sizeof(struct dlist_t));
+    struct dlist_t* list2 = malloc(sizeof(struct dlist_t));
 
     int num_values = 10;
     int values[10];
 
-// Tests - Add
+    dlist_init(list);
+    dlist_init(list2);
+
+// Tests -  Add
 
     for(int i = 0; i < num_values; i++) {
         values[i] = i;
@@ -140,6 +144,13 @@ void double_linked_list_test() {
         values[i] = i;
         dlist_push_front(list, &values[i]);
     }
+
+    /*
+    for(int i = 0; i < num_values; i++) {
+        values[i] = i;
+        dlist_push_back(list2, &values[i]);
+    }
+    */
 
     printf("val AAAAAAAAa %d\n", *(int *)list->tail->prev->data);
 
@@ -180,15 +191,42 @@ void double_linked_list_test() {
         printf("not empty\n");
     }
 
+    printf("head_next val %d\n", *(int *)dlist_next(list->head)->data);
+    printf("tail_cnext val %d\n", *(int *)dlist_cnext(list, list->tail)->data);
+    printf("tail_prev val %d\n", *(int *)dlist_prev(list->tail)->data);
+    printf("tail_prev val %d\n", *(int *)dlist_cprev(list, list->head)->data);
 
+    dlist_move(list2, list, list->head);
+    dlist_move(list, list2, list2->head);
+    dlist_move(list2, list, list->tail);
+
+    int *ptr_index = (int *)(dlist_index(list, list->size-2)->data);
+    printf("val ptr_index %d\n", *ptr_index);
+
+    dlist_rotate(list);
+    dlist_rotate_back(list);
+
+
+
+    printf("\n ------------------------------- \n\n");
+    
     printf("NULL <-> ");
     dlist_foreach(list, double_list_print_data, NULL);
     printf("NULL\n");
 
     printf("\n ------------------------------- \n\n");
 
+    printf("\n ------------------------------- \n\n");
+    
+    printf("NULL <-> ");
+    dlist_foreach(list2, double_list_print_data, NULL);
+    printf("NULL\n");
+
+    printf("\n ------------------------------- \n\n");
+
     dlist_print(list);
     dlist_destroy(list);
+    dlist_destroy(list2);
     printf("ok\n");
 }
 

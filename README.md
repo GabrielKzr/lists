@@ -6,7 +6,7 @@ A C library implementing common list data structures with a simple and efficient
 
 This repository provides implementations of various list data structures in C. The library is designed to be lightweight, easy to use, and suitable for embedded systems and general-purpose applications.
 
-## Current Implementation
+## Current Implementations
 
 ### Singly Linked List
 
@@ -15,6 +15,7 @@ A complete implementation of a singly linked list with the following features:
 - Dynamic memory management
 - Generic data storage (void pointers)
 - Comprehensive set of operations
+- Forward-only traversal
 
 #### Key Features
 
@@ -24,11 +25,28 @@ A complete implementation of a singly linked list with the following features:
 - **List Manipulation**: Invert, rotate, move nodes between lists
 - **Utilities**: Size tracking, empty check, iteration with callbacks
 
+### Doubly Linked List
+
+A complete implementation of a doubly linked list with bidirectional traversal capabilities:
+
+- Dynamic memory management
+- Generic data storage (void pointers)
+- Bidirectional traversal with prev/next pointers
+- Efficient insertion and removal in both directions
+
+#### Key Features
+
+- **Insertion Operations**: Push front, push back, insert at index, insert before/after node
+- **Removal Operations**: Pop front, pop back, remove by index, remove specific nodes
+- **Bidirectional Traversal**: Navigate forward and backward through the list
+- **Search Operations**: Find elements with custom comparison functions
+- **List Manipulation**: Invert, rotate, move nodes between lists
+- **Utilities**: Size tracking, empty check, iteration with callbacks in both directions
+
 ## Roadmap
 
-The following data structures will be added in future releases:
+The following data structure will be added in future releases:
 
-- [ ] **Doubly Linked List** - Bidirectional traversal with prev/next pointers
 - [ ] **Dynamic Array** - Resizable array with automatic capacity management
 
 ## API Reference
