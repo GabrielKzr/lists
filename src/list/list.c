@@ -77,6 +77,8 @@ uint8_t llist_push_back(struct llist_t* list, void* data) {
         return 0;
 
     struct llist_node_t* node = malloc(sizeof(struct llist_node_t));
+    if(node == NULL)
+        return 0;
     
     node->data = data;
     node->next = NULL;
@@ -99,6 +101,8 @@ uint8_t llist_push_front(struct llist_t* list, void* data) {
         return 0;
 
     struct llist_node_t* node = malloc(sizeof(struct llist_node_t));
+    if(node == NULL)
+        return 0;
     
     node->data = data;
     
@@ -125,6 +129,9 @@ uint8_t llist_insert(struct llist_t* list, struct llist_node_t* prev_node, void*
         llist_push_back(list, data);
 
     struct llist_node_t* node = malloc(sizeof(struct llist_node_t));
+    if(node == NULL)
+        return 0;
+
     node->data = data;
     node->next = prev_node->next;
     prev_node->next = node;
@@ -151,6 +158,8 @@ uint8_t llist_insert_index(struct llist_t* list, void* data, int index) {
 
     struct llist_node_t* prev_node = list->head;
     struct llist_node_t* node = malloc(sizeof(struct llist_node_t));
+    if(node == NULL)
+        return 0;
 
     node->data = data;
 
@@ -557,6 +566,9 @@ uint8_t dlist_push_back(struct dlist_t* list, void* data) {
         return 0;
 
     struct dlist_node_t* node = malloc(sizeof(struct dlist_node_t));
+    if(node == NULL)
+        return 0;
+    
     node->data = data;
 
     if(dlist_is_empty(list)) {
@@ -579,6 +591,9 @@ uint8_t dlist_push_front(struct dlist_t* list, void* data) {
         return 0;
 
     struct dlist_node_t* node = malloc(sizeof(struct dlist_node_t));
+    if(node == NULL)
+        return 0;
+
     node->data = data;
 
     if(dlist_is_empty(list)) {
@@ -604,6 +619,9 @@ uint8_t dlist_insert(struct dlist_t* list, struct dlist_node_t* prev_node, void*
         return dlist_push_back(list, data);
 
     struct dlist_node_t* node = malloc(sizeof(struct dlist_node_t));
+    if(node == NULL)
+        return 0;
+
     node->data = data;
 
     prev_node->next->prev = node; // never seg fault 'cause never gonna insert back (handled before)
@@ -630,6 +648,9 @@ uint8_t dlist_insert_index(struct dlist_t* list, void* data, int index) {
         return dlist_push_back(list, data);
 
     struct dlist_node_t* node = malloc(sizeof(struct dlist_node_t));
+    if(node == NULL)
+        return 0;
+
     struct dlist_node_t* prev = list->head;
     node->data = data;
     int count = 0;
