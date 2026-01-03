@@ -51,7 +51,9 @@ The following data structure will be added in future releases:
 
 ## API Reference
 
-### Data Structures
+### Singly Linked List
+
+#### Data Structures
 
 ```c
 struct llist_node_t {
@@ -66,9 +68,9 @@ struct llist_t {
 };
 ```
 
-### Functions
+#### Functions
 
-#### Initialization and Cleanup
+##### Initialization and Cleanup
 
 ```c
 uint8_t llist_init(struct llist_t* list);
@@ -76,7 +78,7 @@ uint8_t llist_clean(struct llist_t* list);
 uint8_t llist_destroy(struct llist_t* list);
 ```
 
-#### Insertion Operations
+##### Insertion Operations
 
 ```c
 uint8_t llist_push_back(struct llist_t* list, void* data);
@@ -85,7 +87,7 @@ uint8_t llist_insert(struct llist_t* list, struct llist_node_t* prev_node, void*
 uint8_t llist_insert_index(struct llist_t* list, void* data, int index);
 ```
 
-#### Removal Operations
+##### Removal Operations
 
 ```c
 void* llist_pop_back(struct llist_t* list);
@@ -94,7 +96,7 @@ void* llist_remove(struct llist_t* list, struct llist_node_t* prev_node);
 void* llist_remove_index(struct llist_t* list, int index);
 ```
 
-#### Search and Traversal
+##### Search and Traversal
 
 ```c
 void* llist_find(struct llist_t* list, uint8_t (*cmp)(void*, void*), void* data);
@@ -104,7 +106,7 @@ struct llist_node_t* llist_next(struct llist_node_t* node);
 struct llist_node_t* llist_cnext(struct llist_t* list, struct llist_node_t* node);
 ```
 
-#### List Manipulation
+##### List Manipulation
 
 ```c
 uint8_t llist_invert(struct llist_t* list);
@@ -113,11 +115,85 @@ uint8_t llist_rotate_back(struct llist_t* list);
 uint8_t llist_move(struct llist_t* list_dst, struct llist_t* list_src, struct llist_node_t* node);
 ```
 
-#### Utility Functions
+##### Utility Functions
 
 ```c
 uint8_t llist_is_empty(struct llist_t* list);
 void llist_print(struct llist_t* list);
+```
+
+### Doubly Linked List
+
+#### Data Structures
+
+```c
+struct dlist_node_t {
+    void* data;
+    struct dlist_node_t* next;
+    struct dlist_node_t* prev;
+};
+
+struct dlist_t {
+    int size;
+    struct dlist_node_t* head;
+    struct dlist_node_t* tail;
+};
+```
+
+#### Functions
+
+##### Initialization and Cleanup
+
+```c
+uint8_t dlist_init(struct dlist_t* list);
+uint8_t dlist_clean(struct dlist_t* list);
+uint8_t dlist_destroy(struct dlist_t* list);
+```
+
+##### Insertion Operations
+
+```c
+uint8_t dlist_push_back(struct dlist_t* list, void* data);
+uint8_t dlist_push_front(struct dlist_t* list, void* data);
+uint8_t dlist_insert(struct dlist_t* list, struct dlist_node_t* prev_node, void* data);
+uint8_t dlist_insert_index(struct dlist_t* list, void* data, int index);
+```
+
+##### Removal Operations
+
+```c
+void* dlist_pop_back(struct dlist_t* list);
+void* dlist_pop_front(struct dlist_t* list);
+void* dlist_remove(struct dlist_t* list, struct dlist_node_t* prev_node);
+void* dlist_remove_index(struct dlist_t* list, int index);
+```
+
+##### Search and Traversal
+
+```c
+void* dlist_find(struct dlist_t* list, uint8_t (*cmp)(void*, void*), void* data);
+uint8_t dlist_foreach(struct dlist_t* list, void (*op)(struct dlist_node_t*, void*), void* data);
+struct dlist_node_t* dlist_index(struct dlist_t* list, int index);
+struct dlist_node_t* dlist_next(struct dlist_node_t* node);
+struct dlist_node_t* dlist_cnext(struct dlist_t* list, struct dlist_node_t* node);
+struct dlist_node_t* dlist_prev(struct dlist_node_t* node);
+struct dlist_node_t* dlist_cprev(struct dlist_t* list, struct dlist_node_t* node);
+```
+
+##### List Manipulation
+
+```c
+uint8_t dlist_invert(struct dlist_t* list);
+uint8_t dlist_rotate(struct dlist_t* list);
+uint8_t dlist_rotate_back(struct dlist_t* list);
+uint8_t dlist_move(struct dlist_t* list_dst, struct dlist_t* list_src, struct dlist_node_t* node);
+```
+
+##### Utility Functions
+
+```c
+uint8_t dlist_is_empty(struct dlist_t* list);
+void dlist_print(struct dlist_t* list);
 ```
 
 ## Building
