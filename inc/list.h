@@ -78,5 +78,24 @@ uint8_t dlist_rotate(struct dlist_t* list);
 uint8_t dlist_rotate_back(struct dlist_t* list);
 void dlist_print(struct dlist_t* list);
 
+struct alist_node_t {
+    void *data;
+};
+
+struct alist_t {
+    int size;
+    int real_size;
+    struct alist_node_t* nodes;
+    struct alist_node_t* begin;
+    struct alist_node_t* end;
+};
+
+uint8_t alist_init(struct alist_t* list);
+uint8_t alist_init_ex(struct alist_t* list, int size);
+uint8_t alist_fill(struct alist_t* list, void* data);
+uint8_t alist_resize(struct alist_t* list, int size);
+uint8_t alist_clean(struct alist_t* list);
+uint8_t alist_destroy(struct alist_t* list);
+uint8_t alist_push_back(struct alist_t* list, void* data);
 
 #endif

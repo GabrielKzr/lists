@@ -234,7 +234,16 @@ int main()
 {
     // printf("Hello, World!\n");
     // linked_list_test();
-    double_linked_list_test();
+    // double_linked_list_test();
+
+    int* test = malloc(5*sizeof(int));
+
+    for(int i = 0; i < 5; i++) {
+        test[i] = i;
+        printf("val %d\n", test[i]);
+    }
+
+    free(test);
 
     return 0;
 }

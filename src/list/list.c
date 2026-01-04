@@ -984,3 +984,59 @@ void dlist_print(struct dlist_t* list) {
     }
     printf("<-> NULL\n");
 }
+
+/*
+struct alist_node_t {
+    void *data;
+};
+
+struct alist_t {
+    int size;
+    int real_size;
+    struct alist_node_t* nodes;
+    struct alist_node_t* begin;
+    struct alist_node_t* end;
+};
+*/
+
+uint8_t alist_init(struct alist_t* list) {
+    
+    if(list == NULL)
+        return 0;
+
+    list->size = 0;
+    list->real_size = 0;
+    list->nodes = NULL;
+    list->begin = NULL;
+    list->end = NULL;
+
+    return 1;
+}
+
+uint8_t alist_init_ex(struct alist_t* list, int size) {
+
+    if(list == NULL)    
+        return 0;
+
+    if(size < 0)
+        return 0;
+
+    if(size == 0) {
+        alist_init(list);
+        return 1;
+    }
+
+    list->size = size;
+    list->real_size = size*2;
+    list->nodes = malloc(list->real_size*sizeof(struct alist_node_t));
+
+    for(int i = 0; i < list->real_size; i++) {
+        list->nodes[i].data = NULL;
+    }
+
+    list->begin = &list->nodes[0];
+    list->end = &list->nodes[list->size-1];
+
+    return 1;
+}
+
