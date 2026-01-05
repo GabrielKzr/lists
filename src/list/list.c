@@ -992,7 +992,7 @@ struct alist_node_t {
 
 struct alist_t {
     int size;
-    int real_size;
+    int capacity;
     struct alist_node_t* nodes;
     struct alist_node_t* begin;
     struct alist_node_t* end;
@@ -1005,7 +1005,7 @@ uint8_t alist_init(struct alist_t* list) {
         return 0;
 
     list->size = 0;
-    list->real_size = 0;
+    list->capacity = 0;
     list->nodes = NULL;
     list->begin = NULL;
     list->end = NULL;
@@ -1013,12 +1013,9 @@ uint8_t alist_init(struct alist_t* list) {
     return 1;
 }
 
-uint8_t alist_init_ex(struct alist_t* list, int size) {
+uint8_t alist_init_ex(struct alist_t* list, size_t size) {
 
     if(list == NULL)    
-        return 0;
-
-    if(size < 0)
         return 0;
 
     if(size == 0) {
@@ -1027,10 +1024,10 @@ uint8_t alist_init_ex(struct alist_t* list, int size) {
     }
 
     list->size = size;
-    list->real_size = size*2;
-    list->nodes = malloc(list->real_size*sizeof(struct alist_node_t));
+    list->capacity = size*2;
+    list->nodes = malloc(list->capacity*sizeof(struct alist_node_t));
 
-    for(int i = 0; i < list->real_size; i++) {
+    for(size_t i = 0; i < list->capacity; i++) {
         list->nodes[i].data = NULL;
     }
 
@@ -1040,3 +1037,126 @@ uint8_t alist_init_ex(struct alist_t* list, int size) {
     return 1;
 }
 
+uint8_t alist_fill(struct alist_t* list, void* data) {
+    if(list == NULL || data == NULL)
+        return 0;
+
+    for(size_t i = 0; i < list->size; i++) {
+        list->nodes[i].data = data;
+    }
+
+    return 1;
+}
+
+uint8_t alist_resize(struct alist_t* list, size_t size) {
+
+    if(list == NULL)
+        return 0;
+    
+    // verify overflow
+    // size*2*sizeof(struct alist_node_t) < SIZ lE_MAX ???
+    // 
+    // is the same as:
+    //  
+    // size > SIZE_MAX / (2 * sizeof(struct alist_node_t)) ???
+    if(size > SIZE_MAX / (2 * sizeof(struct alist_node_t)))
+        return 0;
+
+    if(size == 0) {
+        if(list->nodes != NULL)
+            free(list->nodes);
+
+        list->capacity = 0;
+        list->end = NULL;
+        list->begin = NULL;
+        list->nodes = NULL;
+        list->size = 0;
+        return 1;
+    }
+
+    // if memory is already allocated, just update size val
+    // if data inside nodes are mallocated, the pointer just gonna be forgotten 
+    // (user needs to free list->node[n].data for n > size IF mallocated)
+    if(size <= list->capacity) {
+        list->size = size;
+        list->begin = &list->nodes[0];
+        list->end = &list->nodes[list->size-1];
+        return 1;
+    }
+
+    // if memory is not allocated, realloc with necessary memory plus double capacity (just my standard)
+    struct alist_node_t* temp = realloc(list->nodes, size*2*sizeof(struct alist_node_t));
+    if(temp == NULL)
+        return 0;
+
+    list->nodes = temp;
+    list->size = size;
+    list->capacity = size*2;
+    list->begin = &list->nodes[0];
+    list->end = &list->nodes[list->size-1];
+
+    return 1;
+}
+
+uint8_t alist_reserve(struct alist_t* list, size_t size) {
+
+    if(list == NULL)
+        return 0;
+    
+    if(size > SIZE_MAX / (sizeof(struct alist_node_t)))
+        return 0;
+
+    if(size <= list->capacity)
+        return 1;
+
+    struct alist_node_t* temp = realloc(list->nodes, size*sizeof(struct alist_node_t));
+    if(temp == NULL)
+        return 0;
+
+    list->nodes = temp;
+    list->capacity = size;
+
+    return 1;
+}
+
+uint8_t alist_clean(struct alist_t* list) {
+
+    if(list == NULL)
+        return 0;
+
+    if(list->nodes != NULL) {
+        for(size_t i = 0; i < list->size; i++) {
+            if(list->nodes[i].data != NULL)
+                free(list->nodes[i].data);
+        }
+    
+        free(list->nodes);
+    }
+
+    list->nodes = NULL;
+    list->begin = NULL;
+    list->end = NULL;
+    list->capacity = 0;
+    list->size = 0;
+
+    return 1;
+}
+
+uint8_t alist_destroy(struct alist_t* list) {
+
+    if(list == NULL)
+        return 0;
+
+    if(list->nodes != NULL)
+        free(list->nodes);
+
+    list->nodes = NULL;
+    list->begin = NULL;
+    list->end = NULL;
+    list->capacity = 0;
+    list->size = 0;
+
+    return 1;
+}
+
+uint8_t alist_push_back(struct alist_t* list, void* data);

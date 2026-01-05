@@ -83,17 +83,18 @@ struct alist_node_t {
 };
 
 struct alist_t {
-    int size;
-    int real_size;
+    size_t size;
+    size_t capacity;
     struct alist_node_t* nodes;
     struct alist_node_t* begin;
     struct alist_node_t* end;
 };
 
 uint8_t alist_init(struct alist_t* list);
-uint8_t alist_init_ex(struct alist_t* list, int size);
+uint8_t alist_init_ex(struct alist_t* list, size_t size);
 uint8_t alist_fill(struct alist_t* list, void* data);
-uint8_t alist_resize(struct alist_t* list, int size);
+uint8_t alist_resize(struct alist_t* list, size_t size);
+uint8_t alist_reserve(struct alist_t* list, size_t size);
 uint8_t alist_clean(struct alist_t* list);
 uint8_t alist_destroy(struct alist_t* list);
 uint8_t alist_push_back(struct alist_t* list, void* data);
