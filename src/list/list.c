@@ -1230,6 +1230,95 @@ uint8_t alist_insert(struct alist_t* list, void* data, size_t pos) {
     return 1;
 }
 
+void* alist_pop_back(struct alist_t* list) {
+
+    if(list == NULL)
+        return list;
+
+    if(alist_is_empty(list))
+        return NULL;
+
+    void *data = list->end->data; 
+    list->end->data = NULL;
+    list->size--;
+
+    // automatically reducing capacity size
+    if(list->capacity > 1 && list->size <= list->capacity/4) {
+        size_t new_capacity = list->capacity / 2;
+
+        struct alist_node_t* temp = realloc(list->nodes, new_capacity*sizeof(struct alist_node_t));
+
+        // just ignores shrink errors and keep old capacity (should not have errors, because is reducing allocated memory)
+        // this is why is commented (break operation could cause undefined behavior)
+        /* 
+        if(temp == NULL)
+            return NULL;
+        */
+
+        if(temp != NULL) {
+            list->nodes = temp;
+            list->capacity = new_capacity;
+        }
+    }
+
+    if(list->size == 0) {
+        list->begin = NULL;
+        list->end = NULL;
+        if(list->nodes != NULL)
+            free(list->nodes);
+        list->nodes = NULL;
+        list->capacity = 0;
+    } else {
+        list->begin = &list->nodes[0];
+        list->end = &list->nodes[list->size-1];
+    }
+
+    return data;
+}
+
+void* alist_erase(struct alist_t* list, size_t pos) {
+
+    if(list == NULL)
+        return list;
+
+    if(pos >= list->size)
+        return NULL;
+
+    void *data = list->nodes[pos].data;
+
+    for(size_t i = pos; i < list->size-1; i++) {
+        list->nodes[i].data = list->nodes[i+1].data;
+    }
+
+    list->end->data = NULL;
+    list->size--;
+
+    if(list->capacity > 1 && list->size <= list->capacity / 4) {
+        size_t new_capacity = list->capacity / 2;
+
+        struct alist_node_t* temp = realloc(list->nodes, new_capacity*sizeof(struct alist_node_t));
+
+        if(temp != NULL) {
+            list->nodes = temp;
+            list->capacity = new_capacity;
+        }
+    }
+
+    if(list->size == 0) {
+        list->begin = NULL;
+        list->end = NULL;
+        if(list->nodes != NULL)
+            free(list->nodes);
+        list->nodes = NULL;
+        list->capacity = 0;
+    } else {
+        list->begin = &list->nodes[0];
+        list->end = &list->nodes[list->size-1];
+    }
+    
+    return data;
+}
+
 void* alist_at(struct alist_t* list, size_t pos) {
     if(list == NULL)
         return list;
@@ -1259,6 +1348,41 @@ uint8_t alist_is_empty(struct alist_t* list) {
         return 0;
 
     return list->size == 0;
+}
+
+size_t alist_max_size() {
+    return SIZE_MAX / sizeof(struct alist_node_t);
+}
+
+uint8_t alist_shrink_to_fit(struct alist_t* list) {
+
+    if(list == NULL)
+        return 0;
+
+    if(list->capacity <= list->size)
+        return 1;
+
+    if(list->size == 0) {
+        if(list->nodes != NULL)
+            free(list->nodes);
+        list->nodes = NULL;
+        list->capacity = 0;
+        list->begin = NULL;
+        list->end = NULL;
+        return 1;
+    }
+
+    struct alist_node_t* temp = realloc(list->nodes, list->size*sizeof(struct alist_node_t));
+
+    if(temp != NULL) {
+        list->nodes = temp;
+        list->capacity = list->size;
+        
+        list->begin = &list->nodes[0];
+        list->end = &list->nodes[list->size-1];
+    }
+
+    return 1;
 }
 
 void alist_print(struct alist_t* list, void (*print_fn)(void *)) {
