@@ -98,5 +98,11 @@ uint8_t alist_reserve(struct alist_t* list, size_t size);
 uint8_t alist_clean(struct alist_t* list);
 uint8_t alist_destroy(struct alist_t* list);
 uint8_t alist_push_back(struct alist_t* list, void* data);
+uint8_t alist_insert(struct alist_t* list, void* data, size_t pos);
+void* alist_at(struct alist_t* list, size_t pos);
+void* alist_back(struct alist_t* list);
+void* alist_front(struct alist_t* list);
+uint8_t alist_is_empty(struct alist_t* list);
+void alist_print(struct alist_t* list, void (*print_fn)(void *));
 
 #endif

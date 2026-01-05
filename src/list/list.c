@@ -1054,11 +1054,11 @@ uint8_t alist_resize(struct alist_t* list, size_t size) {
         return 0;
     
     // verify overflow
-    // size*2*sizeof(struct alist_node_t) < SIZ lE_MAX ???
+    // size*2*sizeof(struct alist_node_t) < SIZE_MAX ???
     // 
     // is the same as:
     //  
-    // size > SIZE_MAX / (2 * sizeof(struct alist_node_t)) ???
+    // size < SIZE_MAX / (2 * sizeof(struct alist_node_t)) ???
     if(size > SIZE_MAX / (2 * sizeof(struct alist_node_t)))
         return 0;
 
@@ -1159,4 +1159,116 @@ uint8_t alist_destroy(struct alist_t* list) {
     return 1;
 }
 
-uint8_t alist_push_back(struct alist_t* list, void* data);
+uint8_t alist_push_back(struct alist_t* list, void* data) {
+    if(list == NULL || data == NULL)
+        return 0;
+
+    if(list->size >= list->capacity) {
+
+        // (list->capacity+1) * 2 * sizeof(struct alist_node_t) < SIZE_MAX
+        // (list->capacity+1) < SIZE_MAX / (2 * sizeof(struct alist_node_t))
+
+        // case that occurs overflow
+        size_t new_capacity = list->capacity ? list->capacity * 2 : 1;
+        if(new_capacity > SIZE_MAX / sizeof(struct alist_node_t))
+            return 0;
+
+        struct alist_node_t* temp = realloc(list->nodes, new_capacity*sizeof(struct alist_node_t));
+        if(temp == NULL)
+            return 0;
+
+        list->nodes = temp;
+        // list->begin = &list->nodes[0];
+        list->capacity = new_capacity;
+    }
+
+    list->nodes[list->size].data = data;
+    list->end = &list->nodes[list->size];
+    list->begin = &list->nodes[0];
+    list->size++;
+
+    return 1;
+}
+
+uint8_t alist_insert(struct alist_t* list, void* data, size_t pos) {
+
+    if(list == NULL || data == NULL)
+        return 0;
+
+    if(pos >= list->size+1)
+        return 0;
+
+    if(pos == list->size)
+        return alist_push_back(list, data);
+
+    // update capacity if necessary
+    if(list->size >= list->capacity) {
+
+        size_t new_capacity = list->capacity ? list->capacity * 2 : 1;
+        if(new_capacity > SIZE_MAX / sizeof(struct alist_node_t))
+            return 0;
+
+        struct alist_node_t* temp = realloc(list->nodes, new_capacity*sizeof(struct alist_node_t));
+        if(temp == NULL)
+            return 0;
+
+        list->nodes = temp;
+        // list->begin = &list->nodes[0];
+        list->capacity = new_capacity;
+    }
+
+    // pos is always is 0 ou bigger, so i-1 is not negative
+    for(size_t i = list->size; i > pos; i--) {
+        list->nodes[i].data = list->nodes[i-1].data;
+    }
+    list->nodes[pos].data = data;
+
+    list->end = &list->nodes[list->size];
+    list->begin = &list->nodes[0];
+    list->size++;
+
+    return 1;
+}
+
+void* alist_at(struct alist_t* list, size_t pos) {
+    if(list == NULL)
+        return list;
+
+    if(pos >= list->size)
+        return NULL;
+
+    return list->nodes[pos].data;
+}
+
+void* alist_back(struct alist_t* list) {
+    if(list == NULL)
+        return list;
+
+    return list->end->data;
+}
+
+void* alist_front(struct alist_t* list) {
+    if(list == NULL)
+        return list;
+
+    return list->begin->data;
+}
+
+uint8_t alist_is_empty(struct alist_t* list) {
+    if(list == NULL)
+        return 0;
+
+    return list->size == 0;
+}
+
+void alist_print(struct alist_t* list, void (*print_fn)(void *)) {
+
+    if(list == NULL || print_fn == NULL)
+        return;
+
+    printf("[ ");
+    for(size_t i = 0; i < list->size; i++) {
+        print_fn(list->nodes[i].data);
+    }
+    printf("]\n");
+}

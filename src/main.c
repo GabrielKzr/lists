@@ -230,20 +230,67 @@ void double_linked_list_test() {
     printf("ok\n");
 }
 
+void print_fn(void *data) {
+
+    int* ptr = (int *)data;
+    int val = *ptr;
+
+    printf("%d, ", val);
+}
+
+void array_list_test() {
+    
+    struct alist_t* list = malloc(sizeof(struct alist_t));
+    alist_init_ex(list, 10);
+
+    int fill_data = 123;
+    alist_fill(list, &fill_data);
+
+    int more_data = 987;    
+    for(int i = 0; i < 10; i++) {
+        alist_push_back(list, &more_data);
+    }
+    int test_data = 1234556678;
+    alist_push_back(list, &test_data);
+
+    int insert_data = 675483;
+    alist_insert(list, &insert_data, 0);
+    alist_insert(list, &insert_data, list->size);
+    alist_insert(list, &insert_data, list->size-1);
+
+
+    list->nodes[1].data = &test_data;
+    
+    alist_print(list, print_fn);
+    
+    printf("list->begin.data %d\n", *(int *)list->begin->data);
+    printf("list->end.data %d\n", *(int *)list->end->data);
+    printf("list->size %ld\n", list->size);
+    printf("list->capacity %ld\n", list->capacity);
+
+    alist_destroy(list);
+    free(list);
+
+    printf("ok\n");
+}
+
 int main() 
 {
     // printf("Hello, World!\n");
     // linked_list_test();
     // double_linked_list_test();
+    array_list_test();
 
+    /*
     int* test = malloc(5*sizeof(int));
-
+    
     for(int i = 0; i < 5; i++) {
         test[i] = i;
         printf("val %d\n", test[i]);
     }
-
+    
     free(test);
+    */
 
     return 0;
 }
