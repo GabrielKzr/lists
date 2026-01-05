@@ -111,6 +111,10 @@ void linked_list_test() {
     llist_print(list2);
     llist_destroy(list2);
 
+    free(list);
+    free(list2);
+
+
     printf("ok\n");
 }
 
@@ -227,6 +231,8 @@ void double_linked_list_test() {
     dlist_print(list);
     dlist_destroy(list);
     dlist_destroy(list2);
+    free(list);
+    free(list2);
     printf("ok\n");
 }
 

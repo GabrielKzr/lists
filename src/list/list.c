@@ -46,8 +46,6 @@ uint8_t llist_clean(struct llist_t* list) {
         node = temp;
     }
     
-    free(list);
-
     return 1;
 }
 
@@ -67,8 +65,6 @@ uint8_t llist_destroy(struct llist_t* list) {
         node = temp;
     }
     
-    free(list);
-
     return 1;
 }
 
