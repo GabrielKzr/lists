@@ -1013,7 +1013,7 @@ uint8_t alist_init(struct alist_t* list) {
     return 1;
 }
 
-uint8_t alist_init_ex(struct alist_t* list, size_t size) {
+uint8_t alist_init_ex(struct alist_t* list, size_t size, void* data) {
 
     if(list == NULL)    
         return 0;
@@ -1028,7 +1028,7 @@ uint8_t alist_init_ex(struct alist_t* list, size_t size) {
     list->nodes = malloc(list->capacity*sizeof(struct alist_node_t));
 
     for(size_t i = 0; i < list->capacity; i++) {
-        list->nodes[i].data = NULL;
+        list->nodes[i].data = data;
     }
 
     list->begin = &list->nodes[0];
@@ -1384,6 +1384,49 @@ uint8_t alist_shrink_to_fit(struct alist_t* list) {
 
     return 1;
 }
+
+uint8_t alist_swap(struct alist_t* list1, struct alist_t* list2) {
+
+    if(list1 == NULL || list2 == NULL)
+        return 0;
+
+
+    struct alist_t temp = *list1;
+
+    *list1 = *list2;
+    *list2 = temp;
+
+    return 1;
+}
+
+uint8_t alist_swap_pos(struct alist_t* list, size_t pos1, size_t pos2) {
+
+    if(list == NULL)
+        return 0;
+
+    if(pos1 >= list->size || pos2 >= list->size)
+        return 0;
+
+    void* aux = list->nodes[pos1].data;
+    list->nodes[pos1].data = list->nodes[pos2].data;
+    list->nodes[pos2].data = aux;
+
+    return 1;
+}
+
+uint8_t alist_invert(struct alist_t* list) {
+
+    if(list == NULL)
+        return 0;
+
+    size_t end_pos = list->size-1;
+
+    for(size_t i = 0; i < list->size/2; i++) {
+        alist_swap_pos(list, i, end_pos-i);
+    }
+
+    return 1;
+}   
 
 void alist_print(struct alist_t* list, void (*print_fn)(void *)) {
 

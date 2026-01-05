@@ -91,7 +91,7 @@ struct alist_t {
 };
 
 uint8_t alist_init(struct alist_t* list);
-uint8_t alist_init_ex(struct alist_t* list, size_t size);
+uint8_t alist_init_ex(struct alist_t* list, size_t size, void* data);
 uint8_t alist_fill(struct alist_t* list, void* data);
 uint8_t alist_resize(struct alist_t* list, size_t size);
 uint8_t alist_reserve(struct alist_t* list, size_t size);
@@ -107,6 +107,9 @@ void* alist_front(struct alist_t* list);
 uint8_t alist_is_empty(struct alist_t* list);
 size_t alist_max_size();
 uint8_t alist_shrink_to_fit(struct alist_t* list);
+uint8_t alist_swap(struct alist_t* list1, struct alist_t* list2);
+uint8_t alist_swap_pos(struct alist_t* list, size_t pos1, size_t pos2);
+uint8_t alist_invert(struct alist_t* list);
 void alist_print(struct alist_t* list, void (*print_fn)(void *));
 
 #endif

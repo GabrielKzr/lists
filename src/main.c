@@ -240,11 +240,18 @@ void print_fn(void *data) {
 
 void array_list_test() {
     
+    int init_data = 0;
     struct alist_t* list = malloc(sizeof(struct alist_t));
-    alist_init_ex(list, 10);
+    alist_init_ex(list, 10, &init_data);
+
+    struct alist_t* list2 = malloc(sizeof(struct alist_t));
+    alist_init_ex(list2, 10, &init_data);
 
     int fill_data = 123;
     alist_fill(list, &fill_data);
+
+    int fill_data2 = 12345;
+    alist_fill(list2, &fill_data2);
 
     int more_data = 987;    
     for(int i = 0; i < 10; i++) {
@@ -258,10 +265,24 @@ void array_list_test() {
     alist_insert(list, &insert_data, list->size);
     alist_insert(list, &insert_data, list->size-1);
 
+    int* pop_data = alist_pop_back(list);
+    printf("pop_data -> %d\n", *pop_data);
 
-    list->nodes[1].data = &test_data;
+    int* erase_data = alist_erase(list, 0);
+    printf("erase_data -> %d\n", *erase_data);
+
+    // list->nodes[1].data = &test_data;
+
+    alist_shrink_to_fit(list);
+
+    alist_swap(list, list2);
+    alist_swap(list2, list);
+
+    alist_invert(list);
+    alist_invert(list);
     
     alist_print(list, print_fn);
+    alist_print(list2, print_fn);
     
     printf("list->begin.data %d\n", *(int *)list->begin->data);
     printf("list->end.data %d\n", *(int *)list->end->data);
@@ -269,7 +290,9 @@ void array_list_test() {
     printf("list->capacity %ld\n", list->capacity);
 
     alist_destroy(list);
+    alist_destroy(list2);
     free(list);
+    free(list2);
 
     printf("ok\n");
 }
