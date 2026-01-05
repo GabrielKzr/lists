@@ -43,11 +43,26 @@ A complete implementation of a doubly linked list with bidirectional traversal c
 - **List Manipulation**: Invert, rotate, move nodes between lists
 - **Utilities**: Size tracking, empty check, iteration with callbacks in both directions
 
+### Array List (Dynamic Array)
+
+A contiguous dynamic array implementation with random access and capacity management:
+
+- Dynamic growth/shrink with explicit reserve/resize helpers
+- Contiguous storage with direct indexing
+- Swap operations for lists and positions
+- Optional fill utilities and inversion
+- Custom print function hook for stored data
+
+#### Key Features
+
+- **Initialization & Capacity**: init, init with size/data, reserve, resize, shrink to fit, fill
+- **Insertion/Removal**: push back, insert at position, pop back, erase at position
+- **Access**: at, front, back, iterators via begin/end pointers
+- **Utilities**: is empty check, max size query, swap (list-to-list and position-to-position), invert, print with user callback
+
 ## Roadmap
 
-The following data structure will be added in future releases:
-
-- [ ] **Dynamic Array** - Resizable array with automatic capacity management
+Future enhancements to be defined. Contributions and suggestions are welcome.
 
 ## API Reference
 
@@ -194,6 +209,67 @@ uint8_t dlist_move(struct dlist_t* list_dst, struct dlist_t* list_src, struct dl
 ```c
 uint8_t dlist_is_empty(struct dlist_t* list);
 void dlist_print(struct dlist_t* list);
+```
+
+### Array List (Dynamic Array)
+
+#### Data Structures
+
+```c
+struct alist_node_t {
+    void *data;
+};
+
+struct alist_t {
+    size_t size;
+    size_t capacity;
+    struct alist_node_t* nodes;
+    struct alist_node_t* begin;
+    struct alist_node_t* end;
+};
+```
+
+#### Functions
+
+##### Initialization and Capacity
+
+```c
+uint8_t alist_init(struct alist_t* list);
+uint8_t alist_init_ex(struct alist_t* list, size_t size, void* data);
+uint8_t alist_fill(struct alist_t* list, void* data);
+uint8_t alist_resize(struct alist_t* list, size_t size);
+uint8_t alist_reserve(struct alist_t* list, size_t size);
+uint8_t alist_shrink_to_fit(struct alist_t* list);
+size_t alist_max_size();
+```
+
+##### Insertion and Removal
+
+```c
+uint8_t alist_push_back(struct alist_t* list, void* data);
+uint8_t alist_insert(struct alist_t* list, void* data, size_t pos);
+void* alist_pop_back(struct alist_t* list);
+void* alist_erase(struct alist_t* list, size_t pos);
+```
+
+##### Accessors
+
+```c
+void* alist_at(struct alist_t* list, size_t pos);
+void* alist_back(struct alist_t* list);
+void* alist_front(struct alist_t* list);
+```
+
+##### Utilities
+
+```c
+uint8_t alist_is_empty(struct alist_t* list);
+uint8_t alist_clean(struct alist_t* list);
+uint8_t alist_destroy(struct alist_t* list);
+uint8_t alist_swap(struct alist_t* list1, struct alist_t* list2);
+uint8_t alist_swap_pos(struct alist_t* list, size_t pos1, size_t pos2);
+uint8_t alist_invert(struct alist_t* list);
+void alist_print(struct alist_t* list, void (*print_fn)(void *));
 ```
 
 ## Building
