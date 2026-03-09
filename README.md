@@ -274,7 +274,9 @@ void alist_print(struct alist_t* list, void (*print_fn)(void *));
 
 ## Building
 
-The project uses a Makefile for building:
+### Makefile
+
+The project can use a Makefile for building:
 
 ```bash
 # Build the project
@@ -285,6 +287,24 @@ make run
 
 # Clean build artifacts
 make clean
+```
+
+### CMake
+
+The project can use a CMakeLists.txt file for build:
+
+```bash
+# Create the Makefile generator
+cmake -S . -B build
+
+# Build the project
+make -C build
+
+# Run the project
+./build/app
+
+# Clean build artifacts
+cmake --build build --target clean
 ```
 
 ### Requirements
